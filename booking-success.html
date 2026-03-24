@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Booking Confirmed — BusGo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<nav class="navbar">
+  <div class="nav-logo" onclick="location.href='index.html'">🚌 BusGo</div>
+</nav>
+<div class="success-page">
+  <div class="success-card">
+    <div class="success-icon">🎉</div>
+    <h1>Booking Confirmed!</h1>
+    <p class="success-sub">Your ticket has been booked. Enjoy your journey!</p>
+    <div class="success-details" id="success-details"></div>
+    <div class="success-actions">
+      <a href="my-bookings.html" class="btn-primary"><span class="material-icons" style="font-size:16px">confirmation_number</span> View My Trips</a>
+      <button class="btn-secondary" onclick="location.href='index.html'">Book Another</button>
+    </div>
+    <p class="success-note"><span class="material-icons" style="font-size:14px;vertical-align:middle">email</span> E-ticket sent to your registered email.</p>
+  </div>
+</div>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script>
+  const data=JSON.parse(sessionStorage.getItem('lastBookingData')||'{}');
+  const id=new URLSearchParams(location.search).get('id')||data.bookingId||'—';
+  const bus=data.busInfo||{};
+  document.getElementById('success-details').innerHTML=`
+    <div class="success-row"><span>Booking ID</span><strong>${id}</strong></div>
+    <div class="success-row"><span>Route</span><strong>${bus.from||''} → ${bus.to||''}</strong></div>
+    <div class="success-row"><span>Operator</span><strong>${bus.operator||''}</strong></div>
+    <div class="success-row"><span>Date</span><strong>${bus.date||''}</strong></div>
+    <div class="success-row"><span>Departure</span><strong>${bus.departure||''}</strong></div>
+    <div class="success-row"><span>Seats</span><strong>${(data.seats||[]).join(', ')}</strong></div>
+    <div class="success-row"><span>Total Paid</span><strong style="color:var(--success);font-size:18px">₹${data.totalPrice||''}</strong></div>`;
+</script>
+</body>
+</html>

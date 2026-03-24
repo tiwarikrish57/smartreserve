@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Search Buses — BusGo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="busgo-toast" class="busgo-toast"></div>
+<nav class="navbar">
+  <div class="nav-logo" onclick="location.href='index.html'">🚌 BusGo</div>
+  <div class="nav-right">
+    <button id="nav-bookings" class="nav-icon-btn" style="display:none" onclick="location.href='my-bookings.html'"><span class="material-icons" style="font-size:18px">bookmark</span> My Trips</button>
+    <div class="nav-user-btn" onclick="location.href=auth.currentUser?'my-bookings.html':'auth.html'" style="cursor:pointer"><span class="material-icons" style="font-size:18px">account_circle</span><span id="nav-account">Sign In</span></div>
+    <button class="nav-sign-out" id="nav-signout" style="display:none" onclick="signOutUser()">Sign Out</button>
+  </div>
+</nav>
+
+<div class="results-page">
+  <div class="results-topbar">
+    <form id="search-form" class="results-topbar-form" onsubmit="return false">
+      <div class="md-outlined-field" style="position:relative">
+        <span class="material-icons">trip_origin</span>
+        <input type="text" id="from-city" placeholder="From city" autocomplete="off">
+        <div class="city-dropdown" id="from-city-dropdown"></div>
+      </div>
+      <button type="button" class="swap-sm" id="swap-cities"><span class="material-icons" style="font-size:18px">swap_horiz</span></button>
+      <div class="md-outlined-field" style="position:relative">
+        <span class="material-icons">location_on</span>
+        <input type="text" id="to-city" placeholder="To city" autocomplete="off">
+        <div class="city-dropdown" id="to-city-dropdown"></div>
+      </div>
+      <div class="md-outlined-field">
+        <span class="material-icons">calendar_today</span>
+        <input type="date" id="travel-date" style="border:none;outline:none;font-family:'Roboto',sans-serif;font-size:14px;background:transparent">
+      </div>
+      <button type="submit" form="search-form" class="results-search-btn"><span class="material-icons" style="font-size:16px">search</span> Search</button>
+    </form>
+  </div>
+
+  <div class="results-layout">
+    <aside class="filters-panel">
+      <div class="filters-card">
+        <div class="filters-title"><span class="material-icons" style="font-size:18px;color:var(--primary)">tune</span> Filters</div>
+        <div class="filter-section">
+          <div class="filter-section-label">Sort By</div>
+          <select id="sort-by" class="filter-select">
+            <option value="">Relevance</option>
+            <option value="price-asc">Price: Low → High</option>
+            <option value="price-desc">Price: High → Low</option>
+            <option value="departure">Earliest Departure</option>
+            <option value="rating">Highest Rated</option>
+          </select>
+        </div>
+        <div class="filter-section">
+          <div class="filter-section-label">Bus Type</div>
+          <label class="filter-opt"><input type="checkbox" id="filter-ac"> AC</label>
+          <label class="filter-opt"><input type="checkbox" id="filter-sleeper"> Sleeper</label>
+          <label class="filter-opt"><input type="checkbox" id="filter-seater"> Seater</label>
+        </div>
+        <div class="filter-section">
+          <div class="filter-section-label">Max Price: ₹<span id="price-label">2000</span></div>
+          <input type="range" id="filter-price" min="200" max="2000" value="2000" step="50"
+            oninput="document.getElementById('price-label').textContent=this.value">
+        </div>
+      </div>
+    </aside>
+    <main class="results-main">
+      <div class="results-header">
+        <div><div class="results-route" id="route-heading">Loading…</div><div class="results-meta" id="date-heading"></div></div>
+        <span class="count-chip" id="bus-count"></span>
+      </div>
+      <div id="bus-list"></div>
+    </main>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/search.js"></script>
+<script>document.addEventListener('DOMContentLoaded',()=>{initNavbarAuth();setupCityAutocomplete('from-city','from-city-dropdown');setupCityAutocomplete('to-city','to-city-dropdown');handleSearchForm();handleSwapCities();loadSearchResults();});</script>
+</body>
+</html>

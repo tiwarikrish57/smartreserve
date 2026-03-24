@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Sign In — BusGo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="busgo-toast" class="busgo-toast"></div>
+<div class="auth-page">
+  <div class="auth-left">
+    <div class="auth-left-bg"></div>
+    <a href="index.html" class="auth-brand">🚌 BusGo</a>
+    <h2>Travel smarter,<br><strong>book faster.</strong></h2>
+    <p>Join millions of travelers who book safe, affordable bus tickets across India every day.</p>
+    <div class="auth-perks">
+      <div class="auth-perk"><div class="perk-icon"><span class="material-icons">check_circle</span></div>Instant booking confirmation</div>
+      <div class="auth-perk"><div class="perk-icon"><span class="material-icons">event_seat</span></div>Live seat map &amp; real-time availability</div>
+      <div class="auth-perk"><div class="perk-icon"><span class="material-icons">lock</span></div>Secure &amp; encrypted payments</div>
+      <div class="auth-perk"><div class="perk-icon"><span class="material-icons">replay</span></div>Easy cancellation &amp; refunds</div>
+    </div>
+  </div>
+  <div class="auth-right">
+    <div class="auth-card">
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tab-login" onclick="switchTab('login')">Sign In</button>
+        <button class="auth-tab" id="tab-register" onclick="switchTab('register')">Create Account</button>
+      </div>
+
+      <div id="form-login">
+        <div class="auth-title">Welcome back!</div>
+        <div class="auth-sub">Sign in to access your bookings and trips.</div>
+        <div class="input-group">
+          <label>Email Address</label>
+          <div class="input-field"><span class="material-icons">email</span><input type="email" id="login-email" placeholder="you@email.com" autocomplete="email"></div>
+        </div>
+        <div class="input-group">
+          <label>Password</label>
+          <div class="input-field"><span class="material-icons">lock</span><input type="password" id="login-password" placeholder="Your password" autocomplete="current-password"><button type="button" class="toggle-pass" onclick="togglePassword('login-password',this)"><span class="material-icons" style="font-size:18px;color:var(--on-surface-m)">visibility</span></button></div>
+        </div>
+        <button class="btn-auth" onclick="handleLogin()"><span id="login-btn-text">Sign In</span><span id="login-spinner" style="display:none" class="btn-spinner"></span></button>
+        <div class="auth-divider">or</div>
+        <button class="btn-google" onclick="handleGoogleLogin()"><img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18" alt="G"> Continue with Google</button>
+      </div>
+
+      <div id="form-register" style="display:none">
+        <div class="auth-title">Create Account</div>
+        <div class="auth-sub">Join millions of BusGo travelers today.</div>
+        <div class="input-group">
+          <label>Full Name</label>
+          <div class="input-field"><span class="material-icons">person</span><input type="text" id="reg-name" placeholder="Your full name" autocomplete="name"></div>
+        </div>
+        <div class="input-group">
+          <label>Email Address</label>
+          <div class="input-field"><span class="material-icons">email</span><input type="email" id="reg-email" placeholder="you@email.com" autocomplete="email"></div>
+        </div>
+        <div class="input-group">
+          <label>Password</label>
+          <div class="input-field"><span class="material-icons">lock</span><input type="password" id="reg-password" placeholder="Min. 6 characters" autocomplete="new-password"><button type="button" class="toggle-pass" onclick="togglePassword('reg-password',this)"><span class="material-icons" style="font-size:18px;color:var(--on-surface-m)">visibility</span></button></div>
+        </div>
+        <button class="btn-auth" onclick="handleRegister()"><span id="reg-btn-text">Create Account</span><span id="reg-spinner" style="display:none" class="btn-spinner"></span></button>
+        <div class="auth-divider">or</div>
+        <button class="btn-google" onclick="handleGoogleLogin()"><img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18" alt="G"> Continue with Google</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/auth.js"></script>
+<script>
+  handleGoogleRedirectResult();
+  auth.onAuthStateChanged(u=>{if(u)setTimeout(()=>{const r=new URLSearchParams(location.search).get('redirect');location.href=r||'index.html'},500)});
+  if(new URLSearchParams(location.search).get('tab')==='register')switchTab('register');
+  function switchTab(t){
+    document.getElementById('form-login').style.display=t==='login'?'block':'none';
+    document.getElementById('form-register').style.display=t==='register'?'block':'none';
+    document.getElementById('tab-login').classList.toggle('active',t==='login');
+    document.getElementById('tab-register').classList.toggle('active',t==='register');
+  }
+  async function handleLogin(){
+    const e=document.getElementById('login-email').value.trim(),p=document.getElementById('login-password').value;
+    if(!e||!p){showToast('Please fill all fields.','error');return}
+    setL('login',true);
+    await signInWithEmail(e,p).then(()=>{const r=new URLSearchParams(location.search).get('redirect');location.href=r||'index.html'}).catch(()=>setL('login',false));
+  }
+  async function handleRegister(){
+    const n=document.getElementById('reg-name').value.trim(),e=document.getElementById('reg-email').value.trim(),p=document.getElementById('reg-password').value;
+    if(!n||!e||!p){showToast('Please fill all fields.','error');return}
+    setL('reg',true);
+    await signUpWithEmail(n,e,p).then(()=>location.href='index.html').catch(()=>setL('reg',false));
+  }
+  async function handleGoogleLogin(){await signInWithGoogle().then(()=>{const r=new URLSearchParams(location.search).get('redirect');if(r)location.href=r}).catch(()=>{})}
+  function setL(pfx,l){document.getElementById(pfx+'-btn-text').style.display=l?'none':'inline';document.getElementById(pfx+'-spinner').style.display=l?'inline-block':'none'}
+  function togglePassword(id,btn){const i=document.getElementById(id);i.type=i.type==='password'?'text':'password';btn.innerHTML=`<span class="material-icons" style="font-size:18px;color:var(--on-surface-m)">${i.type==='password'?'visibility':'visibility_off'}</span>`}
+</script>
+</body>
+</html>

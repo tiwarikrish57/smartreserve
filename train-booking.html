@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Book Train — BusGo</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="train-styles.css">
+</head>
+<body>
+<div id="busgo-toast" class="busgo-toast"></div>
+<nav class="tr-navbar">
+  <a href="train.html" class="tr-logo">🚌 BusGo Trains</a>
+  <div class="tr-nav-right">
+    <a href="javascript:history.back()" class="tr-nav-back"><span class="material-icons" style="font-size:18px">arrow_back</span> Back</a>
+    <div class="tr-nav-user" id="nav-account-btn" style="cursor:pointer"><span class="material-icons" style="font-size:16px">account_circle</span><span id="nav-account">Sign In</span></div>
+    <button class="tr-nav-signout" id="nav-signout" style="display:none" onclick="typeof signOutUser==='function'&&signOutUser()">Sign Out</button>
+  </div>
+</nav>
+
+<div class="tr-booking-page">
+  <div class="tr-banner">
+    <div>
+      <div class="tr-banner-name" id="tr-book-name">Loading…</div>
+      <div class="tr-banner-num" id="tr-book-num"></div>
+    </div>
+    <div style="text-align:right">
+      <div class="tr-banner-route" id="tr-book-route"></div>
+      <div class="tr-banner-time" id="tr-book-time"></div>
+    </div>
+    <div style="text-align:right">
+      <div style="font-size:11px;color:var(--tr-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Class</div>
+      <div id="tr-book-class" style="font-size:18px;font-weight:700;color:#c4b5fd"></div>
+      <div style="font-size:11px;color:var(--tr-muted);margin-top:4px" id="tr-book-quota"></div>
+    </div>
+  </div>
+
+  <div class="tr-b-layout">
+    <div class="tr-b-left">
+      <div class="tr-panel">
+        <div class="tr-panel-h"><span class="material-icons" style="color:#7c3aed">airline_seat_flat</span> Select Berths</div>
+        <div class="tr-panel-sub">Tap an available berth to select it. Max 6 berths per booking.</div>
+        <div class="tr-coach-select-bar">
+          <span style="font-size:13px;color:var(--tr-muted)">Coach:</span>
+          <select class="tr-coach-sel" id="tr-coach-select" onchange="renderBerthMap()">
+            <option value="S1">S1 — Sleeper</option>
+            <option value="S2">S2 — Sleeper</option>
+            <option value="S3">S3 — Sleeper</option>
+            <option value="B1">B1 — AC 3-Tier</option>
+            <option value="B2">B2 — AC 3-Tier</option>
+            <option value="A1">A1 — AC 2-Tier</option>
+          </select>
+        </div>
+        <div class="tr-legend">
+          <div class="tr-key kav">Available</div>
+          <div class="tr-key kbk">Booked</div>
+          <div class="tr-key ksl">Selected</div>
+        </div>
+        <div id="berth-map"><div class="tr-spinner"></div></div>
+        <div class="tr-b-sum">Selected berths: <strong id="selected-berths-display">None</strong></div>
+      </div>
+
+      <div class="tr-panel">
+        <div class="tr-panel-h"><span class="material-icons" style="color:#7c3aed">person</span> Passenger Details</div>
+        <div class="tr-panel-sub">Enter details for each selected berth.</div>
+        <div id="passenger-forms"><p class="no-seat-msg">Select berths above to fill passenger details.</p></div>
+      </div>
+
+      <div class="tr-panel">
+        <div class="tr-panel-h"><span class="material-icons" style="color:#7c3aed">contact_phone</span> Contact Information</div>
+        <div class="tr-f-row" style="margin-top:8px">
+          <div class="tr-fg"><label>Full Name *</label><input type="text" id="contact-name" placeholder="Contact person name"></div>
+          <div class="tr-fg"><label>Mobile *</label><input type="tel" id="contact-phone" placeholder="+91 XXXXXXXXXX"></div>
+          <div class="tr-fg"><label>Email *</label><input type="email" id="contact-email" placeholder="you@email.com"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tr-b-right">
+      <div class="tr-price-card">
+        <div class="tr-panel-h" style="margin-bottom:14px"><span class="material-icons" style="color:#7c3aed;font-size:18px">receipt_long</span> Price Summary</div>
+        <div class="tr-pr"><span>Berths selected</span><strong id="seat-count">0</strong></div>
+        <div class="tr-pr"><span>Base fare/berth</span><strong id="base-price">₹0</strong></div>
+        <div class="tr-pr"><span>Subtotal</span><strong id="subtotal">₹0</strong></div>
+        <div class="tr-pr"><span>IRCTC convenience fee</span><strong id="service-fee">₹0</strong></div>
+        <div class="tr-pr-total"><span>Total</span><span class="tr-grand" id="total-price">₹0</span></div>
+        <button id="confirm-btn" class="tr-confirm-btn" disabled>
+          <span class="material-icons" style="font-size:18px">confirmation_number</span> CONFIRM BOOKING
+        </button>
+        <div class="tr-secure"><span class="material-icons" style="font-size:14px">lock</span> Secured by IRCTC Protocol</div>
+      </div>
+      <div class="tr-panel" style="padding:18px">
+        <div class="tr-panel-h" style="font-size:14px;margin-bottom:12px">Cancellation Policy</div>
+        <div class="tr-policy"><span class="tr-policy-dot" style="background:#34d399"></span> 4+ days before: Full refund</div>
+        <div class="tr-policy"><span class="tr-policy-dot" style="background:#fb923c"></span> 1–4 days before: 75% refund</div>
+        <div class="tr-policy"><span class="tr-policy-dot" style="background:#f87171"></span> Under 24 hrs: No refund</div>
+        <div class="tr-policy"><span class="tr-policy-dot" style="background:#94a3b8"></span> Tatkal: Non-refundable</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/train.js"></script>
+<script src="js/train-booking.js"></script>
+<script>document.addEventListener('DOMContentLoaded',()=>{if(typeof initNavbarAuth==='function')initNavbarAuth();initTrainBooking();})</script>
+</body>
+</html>

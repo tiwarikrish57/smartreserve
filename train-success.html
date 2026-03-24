@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Booking Confirmed — BusGo Trains</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="train-styles.css">
+</head>
+<body>
+<nav class="tr-navbar">
+  <a href="train.html" class="tr-logo">🚌 BusGo Trains</a>
+</nav>
+<div class="tr-success-pg" style="padding-top:80px">
+  <div class="tr-success-box">
+    <div class="tr-success-ico">🎟️</div>
+    <div class="tr-success-h1">Train Booked!</div>
+    <p class="tr-success-sub">Your e-ticket is confirmed. Bon voyage!</p>
+    <div class="tr-details" id="tr-detail-rows"></div>
+    <div class="tr-s-actions">
+      <a href="train.html" class="tr-s-btn-p"><span class="material-icons" style="font-size:15px">search</span> Book Another</a>
+      <button class="tr-s-btn-s" onclick="location.href='index.html'">Go to BusGo Home</button>
+    </div>
+    <p class="tr-s-note"><span class="material-icons" style="font-size:14px;vertical-align:middle">email</span> E-ticket sent to your registered email</p>
+  </div>
+</div>
+
+<script>
+  const data = JSON.parse(sessionStorage.getItem('lastTrainBooking') || '{}');
+  const pnr  = new URLSearchParams(location.search).get('pnr') || data.pnr || '—';
+  document.getElementById('tr-detail-rows').innerHTML = `
+    <div class="tr-drow"><span>PNR Number</span><strong class="tr-pnr">${pnr}</strong></div>
+    <div class="tr-drow"><span>Train</span><strong>${data.trainName || '—'} (#${data.trainNum || '—'})</strong></div>
+    <div class="tr-drow"><span>Route</span><strong>${data.from || '—'} → ${data.to || '—'}</strong></div>
+    <div class="tr-drow"><span>Date</span><strong>${data.date || '—'}</strong></div>
+    <div class="tr-drow"><span>Departure</span><strong>${data.dep || '—'}</strong></div>
+    <div class="tr-drow"><span>Class / Coach</span><strong>${data.selectedClass || '—'} · ${data.coach || '—'}</strong></div>
+    <div class="tr-drow"><span>Berths</span><strong>${(data.berths || []).join(', ')}</strong></div>
+    <div class="tr-drow"><span>Total Paid</span><strong style="font-size:18px;background:linear-gradient(135deg,#34d399,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent">₹${data.totalPrice || '—'}</strong></div>
+    <div class="tr-drow"><span>Booking Status</span><strong style="color:#34d399">CONFIRMED ✓</strong></div>`;
+</script>
+</body>
+</html>

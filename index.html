@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>BusGo — Book Bus Tickets Online</title>
+  <meta name="description" content="Book bus tickets across India instantly. 3500+ operators, live seats, instant confirmation.">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="busgo-toast" class="busgo-toast"></div>
+
+<nav class="navbar">
+  <div class="nav-logo" onclick="location.href='index.html'">🚌 BusGo</div>
+  <div class="nav-tabs">
+    <button class="nav-tab active"><span class="material-icons" style="font-size:18px">directions_bus</span>Bus</button>
+    <button class="nav-tab" onclick="location.href='train.html'"><span class="material-icons" style="font-size:18px">train</span>Train</button>
+    <button class="nav-tab"><span class="material-icons" style="font-size:18px">local_taxi</span>Cab</button>
+  </div>
+  <div class="nav-right">
+    <button class="nav-icon-btn"><span class="material-icons" style="font-size:18px">headset_mic</span> Help</button>
+    <button id="nav-bookings" class="nav-icon-btn" style="display:none" onclick="location.href='my-bookings.html'">
+      <span class="material-icons" style="font-size:18px">bookmark</span> My Trips
+    </button>
+    <div class="nav-user-btn" id="nav-account-btn" onclick="handleAccountClick()" style="cursor:pointer">
+      <span class="material-icons" style="font-size:18px">account_circle</span>
+      <span id="nav-account">Sign In</span>
+    </div>
+    <button class="nav-sign-out" id="nav-signout" style="display:none" onclick="signOutUser()">Sign Out</button>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <span class="hero-eyebrow"><span class="material-icons" style="font-size:14px">star</span> India's #1 Bus Booking Platform</span>
+  <h1>Book Your <strong>Bus Tickets</strong><br>in Seconds</h1>
+  <p>3500+ operators · 500+ routes · Real-time seats · Instant confirmation</p>
+
+  <form id="search-form" class="search-card" onsubmit="return false">
+    <div class="search-row">
+      <div class="search-field" style="position:relative">
+        <div class="search-field-icon"><span class="material-icons">trip_origin</span></div>
+        <div class="search-field-text">
+          <span class="search-field-label">From</span>
+          <span class="search-field-value" id="from-city-display">Hyderabad</span>
+        </div>
+        <input class="city-input" id="from-city" type="text" value="Hyderabad" autocomplete="off">
+        <div class="city-dropdown" id="from-city-dropdown"></div>
+      </div>
+      <div class="swap-wrap">
+        <button type="button" class="swap-btn" id="swap-cities"><span class="material-icons" style="font-size:18px">swap_horiz</span></button>
+      </div>
+      <div class="search-field" style="position:relative">
+        <div class="search-field-icon"><span class="material-icons">location_on</span></div>
+        <div class="search-field-text">
+          <span class="search-field-label">To</span>
+          <span class="search-field-value" id="to-city-display">Pune</span>
+        </div>
+        <input class="city-input" id="to-city" type="text" value="Pune" autocomplete="off">
+        <div class="city-dropdown" id="to-city-dropdown"></div>
+      </div>
+      <div class="search-field">
+        <div class="search-field-icon"><span class="material-icons">calendar_today</span></div>
+        <div class="search-field-text">
+          <span class="search-field-label">Date</span>
+          <input class="date-inp" id="travel-date" type="date">
+        </div>
+      </div>
+      <div class="search-submit-wrap">
+        <button type="submit" form="search-form" class="search-submit">
+          <span class="material-icons">search</span> Search Buses
+        </button>
+      </div>
+    </div>
+  </form>
+
+  <div class="hero-stats">
+    <div class="hero-stat"><div class="hero-stat-num">3500+</div><div class="hero-stat-label">Bus Operators</div></div>
+    <div class="hero-stat"><div class="hero-stat-num">10M+</div><div class="hero-stat-label">Happy Travelers</div></div>
+    <div class="hero-stat"><div class="hero-stat-num">500+</div><div class="hero-stat-label">Routes</div></div>
+    <div class="hero-stat"><div class="hero-stat-num">97%</div><div class="hero-stat-label">On-Time Rate</div></div>
+  </div>
+</section>
+
+<!-- Offers -->
+<div class="page-section">
+  <div class="section-label">Exclusive Deals</div>
+  <div class="section-title">Today's Best Offers</div>
+  <div class="offers-grid">
+    <div class="offer-card"><div class="offer-chip orange">FLAT 15% OFF</div><h3>First Booking Offer</h3><p>Use code <strong>BUSGO15</strong> on your first ticket and save 15% instantly on any route.</p></div>
+    <div class="offer-card"><div class="offer-chip blue">SAVE ₹100</div><h3>Weekend Special</h3><p>Running getaway? Use <strong>WEEKEND100</strong> every Friday–Sunday on any route.</p></div>
+    <div class="offer-card"><div class="offer-chip green">FREE SEAT</div><h3>Group 4+1 Offer</h3><p>Traveling with friends? Book 4 seats and get the <strong>5th one absolutely free</strong>.</p></div>
+  </div>
+</div>
+
+<!-- How it works -->
+<div class="page-section" style="padding-top:0">
+  <div class="section-label">Simple Process</div>
+  <div class="section-title">How BusGo Works</div>
+  <div class="how-grid">
+    <div class="how-card"><div class="how-num">1</div><h3>Search Your Route</h3><p>Enter your origin, destination and travel date to instantly discover all available buses.</p></div>
+    <div class="how-card"><div class="how-num">2</div><h3>Pick Your Seat</h3><p>Browse the live seat map, compare operators and prices, then select your preferred seat.</p></div>
+    <div class="how-card"><div class="how-num">3</div><h3>Confirm & Go</h3><p>Enter passenger details, confirm booking, and get your e-ticket instantly on screen.</p></div>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div><div class="footer-logo">🚌 BusGo</div><p class="footer-desc">India's fastest-growing bus ticket booking platform. Trusted by 10 million+ travelers for safe, easy and affordable journeys.</p></div>
+      <div class="footer-col"><h4>Company</h4><ul><li>About Us</li><li>Careers</li><li>Blog</li><li>Press</li></ul></div>
+      <div class="footer-col"><h4>Support</h4><ul><li>Help Center</li><li>FAQ</li><li>Privacy Policy</li><li>Refund Policy</li></ul></div>
+      <div class="footer-col"><h4>Regions</h4><ul><li>India</li><li>Malaysia</li><li>Thailand</li><li>Singapore</li></ul></div>
+    </div>
+    <div class="footer-bottom"><span>© 2026 BusGo India Pvt. Ltd.</span><span>Made with ❤️ for travelers</span></div>
+  </div>
+</footer>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/search.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded',()=>{
+    initNavbarAuth();
+    setupCityAutocomplete('from-city','from-city-dropdown');
+    setupCityAutocomplete('to-city','to-city-dropdown');
+    handleSearchForm(); handleSwapCities();
+    const today=new Date().toISOString().split('T')[0];
+    const di=document.getElementById('travel-date');
+    if(di){di.value=today;di.min=today}
+    ['from-city','to-city'].forEach(id=>{
+      const inp=document.getElementById(id),disp=document.getElementById(id+'-display');
+      if(inp&&disp) inp.addEventListener('input',()=>{if(inp.value)disp.textContent=inp.value});
+    });
+  });
+  function handleAccountClick(){
+    location.href=auth.currentUser?'my-bookings.html':'auth.html';
+  }
+</script>
+</body>
+</html>

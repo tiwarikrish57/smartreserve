@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>My Trips — BusGo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="busgo-toast" class="busgo-toast"></div>
+<nav class="navbar">
+  <div class="nav-logo" onclick="location.href='index.html'">🚌 BusGo</div>
+  <div class="nav-right">
+    <a href="index.html" class="nav-back-link"><span class="material-icons" style="font-size:16px">search</span> Search Buses</a>
+    <button class="nav-sign-out" onclick="signOutUser()">Sign Out</button>
+  </div>
+</nav>
+<div class="my-bookings-page">
+  <div class="page-header-row">
+    <div><div class="page-title">My Trips</div><div class="page-sub">Hello, <strong id="user-name">Traveler</strong> — here are all your journeys.</div></div>
+    <a href="index.html" class="btn-new-search"><span class="material-icons" style="font-size:16px">search</span> Book New Ticket</a>
+  </div>
+  <div class="filter-tabs">
+    <button class="filter-tab active" onclick="filterBookings('all',this)">All</button>
+    <button class="filter-tab" onclick="filterBookings('upcoming',this)">Upcoming</button>
+    <button class="filter-tab" onclick="filterBookings('completed',this)">Completed</button>
+    <button class="filter-tab" onclick="filterBookings('cancelled',this)">Cancelled</button>
+  </div>
+  <div id="bookings-list"><div class="loading-spinner"></div></div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/my-bookings.js"></script>
+<script>
+  let _allBookings=[];
+  const _orig=window.renderBookings;
+  window.renderBookings=function(b){_allBookings=b;_orig(b)};
+  function filterBookings(type,btn){
+    document.querySelectorAll('.filter-tab').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    if(type==='all'){window.renderBookings(_allBookings);return}
+    const f=_allBookings.filter(b=>{
+      const d=new Date((b.busInfo?.date||b.date||'')+'T00:00:00'),up=d>=new Date();
+      if(type==='upcoming')return b.status!=='cancelled'&&up;
+      if(type==='completed')return b.status!=='cancelled'&&!up;
+      if(type==='cancelled')return b.status==='cancelled';
+    });
+    _orig(f);
+  }
+  document.addEventListener('DOMContentLoaded',()=>{
+    initNavbarAuth();
+    auth.onAuthStateChanged(u=>{if(u)document.getElementById('user-name').textContent=u.displayName||u.email?.split('@')[0]||'Traveler'});
+    loadMyBookings();
+  });
+</script>
+</body>
+</html>

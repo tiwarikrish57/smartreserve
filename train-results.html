@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Train Results — BusGo</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="train-styles.css">
+</head>
+<body>
+<div id="busgo-toast" class="busgo-toast"></div>
+<nav class="tr-navbar">
+  <a href="train.html" class="tr-logo">🚌 BusGo Trains</a>
+  <div class="tr-nav-right">
+    <a href="javascript:history.back()" class="tr-nav-back"><span class="material-icons" style="font-size:18px">arrow_back</span> Back</a>
+    <div class="tr-nav-user" id="nav-account-btn" style="cursor:pointer"><span class="material-icons" style="font-size:16px">account_circle</span><span id="nav-account">Sign In</span></div>
+    <button class="tr-nav-signout" id="nav-signout" style="display:none" onclick="typeof signOutUser==='function'&&signOutUser()">Sign Out</button>
+  </div>
+</nav>
+
+<div class="tr-results-page">
+  <div class="tr-top-strip">
+    <form id="tr-search-form" class="tr-top-form" onsubmit="reSearch(event)">
+      <div class="tr-top-field" style="position:relative">
+        <span class="material-icons">train</span>
+        <input type="text" id="tr-from" placeholder="From" oninput="trStationAC('tr-from','tr-from-drop')" autocomplete="off">
+        <div class="tr-drop" id="tr-from-drop"></div>
+      </div>
+      <button type="button" class="tr-top-swap" id="tr-swap" onclick="swapTrainStations()"><span class="material-icons" style="font-size:18px">swap_horiz</span></button>
+      <div class="tr-top-field" style="position:relative">
+        <span class="material-icons">location_on</span>
+        <input type="text" id="tr-to" placeholder="To" oninput="trStationAC('tr-to','tr-to-drop')" autocomplete="off">
+        <div class="tr-drop" id="tr-to-drop"></div>
+      </div>
+      <div class="tr-top-field">
+        <span class="material-icons">calendar_today</span>
+        <input type="date" id="tr-date" style="background:transparent;border:none;outline:none;color:var(--tr-text);font-family:'Roboto',sans-serif;font-size:14px">
+      </div>
+      <div class="tr-top-field" style="max-width:140px">
+        <span class="material-icons">airline_seat_recline_normal</span>
+        <select id="tr-class" style="background:transparent;border:none;outline:none;color:var(--tr-text);font-family:'Roboto',sans-serif;font-size:14px">
+          <option value="">All Classes</option>
+          <option value="1A">1A</option><option value="2A">2A</option><option value="3A">3A</option>
+          <option value="SL">SL</option><option value="CC">CC</option><option value="2S">2S</option>
+        </select>
+      </div>
+      <button type="submit" class="tr-go-sm"><span class="material-icons" style="font-size:16px">search</span> Search</button>
+    </form>
+  </div>
+
+  <div class="tr-layout">
+    <aside class="tr-sidebar">
+      <div class="tr-filter-box">
+        <div class="tr-filt-title"><span class="material-icons" style="font-size:18px;color:#7c3aed">tune</span> Filters</div>
+        <div class="tr-filt-section">
+          <div class="tr-filt-label">Sort By</div>
+          <select id="sort-trains" class="tr-filt-select">
+            <option value="">Relevance</option>
+            <option value="dep">Earliest Departure</option>
+            <option value="dur">Shortest Duration</option>
+            <option value="price-asc">Price: Low → High</option>
+            <option value="price-desc">Price: High → Low</option>
+          </select>
+        </div>
+        <div class="tr-filt-section">
+          <div class="tr-filt-label">Train Type</div>
+          <label class="tr-filt-opt"><input type="checkbox" id="f-rajdhani"> Rajdhani</label>
+          <label class="tr-filt-opt"><input type="checkbox" id="f-shatabdi"> Shatabdi</label>
+          <label class="tr-filt-opt"><input type="checkbox" id="f-express"> Express</label>
+          <label class="tr-filt-opt"><input type="checkbox" id="f-intercity"> Intercity</label>
+        </div>
+        <div class="tr-filt-section">
+          <div class="tr-filt-label">Departure Time</div>
+          <label class="tr-filt-opt"><input type="checkbox" id="f-morning"> Morning (6–12)</label>
+          <label class="tr-filt-opt"><input type="checkbox" id="f-afternoon"> Afternoon (12–18)</label>
+          <label class="tr-filt-opt"><input type="checkbox" id="f-night"> Night (18–24)</label>
+        </div>
+      </div>
+    </aside>
+    <main class="tr-results-main">
+      <div class="tr-rh">
+        <div><div class="tr-route-h" id="tr-route-heading">Loading…</div><div class="tr-date-meta" id="tr-date-heading"></div></div>
+        <span class="tr-count" id="tr-count"></span>
+      </div>
+      <div id="train-list"></div>
+    </main>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/train.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded',()=>{
+    if(typeof initNavbarAuth==='function') initNavbarAuth();
+    loadTrainResults();
+  });
+  function reSearch(e){
+    e.preventDefault();
+    const from=document.getElementById('tr-from').value.trim();
+    const to=document.getElementById('tr-to').value.trim();
+    const date=document.getElementById('tr-date').value;
+    const cls=document.getElementById('tr-class').value;
+    if(!from||!to||!date){showToast('Fill all fields','error');return}
+    location.href=`train-results.html?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}&date=${date}&class=${cls}`;
+  }
+</script>
+</body>
+</html>

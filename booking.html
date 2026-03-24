@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Book Tickets — BusGo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="busgo-toast" class="busgo-toast"></div>
+<nav class="navbar">
+  <div class="nav-logo" onclick="location.href='index.html'">🚌 BusGo</div>
+  <div class="nav-right">
+    <a href="javascript:history.back()" class="nav-back-link"><span class="material-icons" style="font-size:18px">arrow_back</span> Back</a>
+    <button id="nav-bookings" class="nav-icon-btn" style="display:none" onclick="location.href='my-bookings.html'"><span class="material-icons" style="font-size:18px">bookmark</span></button>
+    <div class="nav-user-btn" onclick="location.href=auth.currentUser?'my-bookings.html':'auth.html'" style="cursor:pointer"><span class="material-icons" style="font-size:18px">account_circle</span><span id="nav-account">Sign In</span></div>
+    <button class="nav-sign-out" id="nav-signout" style="display:none" onclick="signOutUser()">Sign Out</button>
+  </div>
+</nav>
+
+<div class="booking-page">
+  <div class="booking-banner">
+    <div>
+      <div class="booking-op" id="book-operator">Loading…</div>
+      <span id="book-type" class="bus-type-chip" style="margin-top:6px;display:inline-block"></span>
+    </div>
+    <div style="text-align:right">
+      <div class="booking-route-text" id="book-route"></div>
+      <div class="booking-time-text" id="book-time"></div>
+    </div>
+  </div>
+
+  <div class="booking-layout">
+    <div class="booking-left">
+      <div class="md-card">
+        <div class="md-card-title">Select Your Seats</div>
+        <div class="md-card-sub">Tap a green seat to select. Maximum 6 seats per booking.</div>
+        <div class="seat-legend">
+          <div class="seat-key available">Available</div>
+          <div class="seat-key booked">Booked</div>
+          <div class="seat-key selected">Selected</div>
+        </div>
+        <div id="seat-map"><div class="loading-spinner"></div></div>
+        <div class="seat-summary">Selected seats: <strong id="selected-seats-display">None</strong></div>
+      </div>
+
+      <div class="md-card">
+        <div class="md-card-title">Passenger Details</div>
+        <div class="md-card-sub">Fill in details for each selected seat.</div>
+        <div id="passenger-forms"><p class="no-seat-msg">Select seats above to fill passenger details.</p></div>
+      </div>
+
+      <div class="md-card">
+        <div class="md-card-title">Contact Information</div>
+        <div class="form-row" style="margin-top:8px">
+          <div class="form-group"><label>Full Name *</label><input type="text" id="contact-name" placeholder="Your name"></div>
+          <div class="form-group"><label>Mobile *</label><input type="tel" id="contact-phone" placeholder="+91 XXXXXXXXXX"></div>
+          <div class="form-group"><label>Email *</label><input type="email" id="contact-email" placeholder="you@email.com"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="booking-right">
+      <div class="md-card" style="border:1px solid var(--outline-v)">
+        <div class="md-card-title">Price Summary</div>
+        <div class="price-row"><span>Seats</span><strong id="seat-count">0</strong></div>
+        <div class="price-row"><span>Base fare/seat</span><strong id="base-price">₹0</strong></div>
+        <div class="price-row"><span>Subtotal</span><strong id="subtotal">₹0</strong></div>
+        <div class="price-row"><span>Service fee (5%)</span><strong id="service-fee">₹0</strong></div>
+        <div class="price-total"><span>Total</span><span class="price-total-amount" id="total-price">₹0</span></div>
+        <button id="confirm-btn" class="book-btn" disabled>
+          <span class="material-icons" style="font-size:18px">confirmation_number</span> CONFIRM BOOKING
+        </button>
+        <div class="secure-note"><span class="material-icons" style="font-size:14px">lock</span> 256-bit secure payment</div>
+      </div>
+      <div class="md-card">
+        <div class="md-card-title" style="margin-bottom:12px">Cancellation Policy</div>
+        <div class="policy-item"><span class="policy-dot" style="background:var(--success)"></span> Before 24 hrs: Full refund</div>
+        <div class="policy-item"><span class="policy-dot" style="background:var(--warning)"></span> 12–24 hrs: 75% refund</div>
+        <div class="policy-item"><span class="policy-dot" style="background:var(--error)"></span> Under 12 hrs: No refund</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/booking.js"></script>
+<script>document.addEventListener('DOMContentLoaded',()=>{initNavbarAuth();initBookingPage();});</script>
+</body>
+</html>
