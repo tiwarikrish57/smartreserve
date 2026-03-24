@@ -4,6 +4,12 @@
 
 ---
 
+## 📸 Preview
+
+![SmartReserve Preview](images/preview.png)
+
+---
+
 ## ✨ Features
 
 ### 🚌 Bus Booking
@@ -103,12 +109,6 @@ smartreserve/
 2. Enable **Authentication** → Google Sign-In
 3. Enable **Firestore Database**
 4. Replace the config in `js/firebase-config.js` with your own Firebase credentials
-
----
-
-## 📸 Preview
-
-![SmartReserve Preview](screenshot-redbus.gif)
 
 ---
 
